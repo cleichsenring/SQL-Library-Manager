@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 
 //Routes import
-const routes = require('./routes/index');
+const routes = require('./routes/');
 const books = require('./routes/books');
 
 //View engine setup
@@ -23,14 +23,19 @@ app.use('/', routes);
 app.use('/books', books);
 
 //404 middleware 
+app.use((req, res, next) => {
+  const err = new Error();
+  err.status = 404;
+  err.message = 'This page does not exist'
+  next(err)
+});
 
-
-//Error handles
+//Global error handler
 app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = err ;
+  err.message = err.message || 'Whoops, looks like the server took a nap. An unknown error has occurred';
   res.status(err.status || 500);
-  res.render('error');
+  console.log('The following error just occurred:', err);
+  err.status === 404 ? res.render('page-not-found', {err}) : res.render('error', {err});
 });
 
 
