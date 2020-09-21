@@ -17,34 +17,40 @@ function asyncHandler(cb){
 
 /* GET - all books */
 router.get('/', asyncHandler(async (req, res) => {
-  res.render('index', { });
+  const books = await Book.findAll();
+  res.render('index', { books, title: 'Books'});
 }));
 
 /* GET - Create a new book form */
 router.get('/new', asyncHandler(async (req, res) => {
-  res.render('new-book', { });
+  res.render('new-book', { title: 'New Book' });
 }));
 
 /* POST - create book */
 router.post('/new', asyncHandler(async (req, res) => {
+  const book = await Book.create(req.body);
   res.redirect('/books');
 }));
 
 /* GET - individual book */
 router.get('/:id', asyncHandler(async (req, res) => {
-  res.render('update-book', { });
+  const book = await Book.findByPk(req.params.id);
+  res.render('update-book', { book , title: 'Update book'});
 }));
 
 /* POST - Update individual book */
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/:id', asyncHandler(async (req, res) => {
+  const book = await Book.findByPk(req.params.id);
+  await book.update(req.body);
+  res.redirect('/books');
 
 }));
 
-/* Delete book confirmation OPTIONAL */
-
 /* POST - Delete individual book */
 router.post('/:id/delete', asyncHandler(async (req, res) => {
-
+  const book = await Book.findByPk(req.params.id);
+  await book.destroy();
+  res.redirect('/books');
 }));
 
 
