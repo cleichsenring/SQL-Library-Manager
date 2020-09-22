@@ -23,13 +23,21 @@ router.get('/', asyncHandler(async (req, res) => {
 
 /* GET - Create a new book form */
 router.get('/new', asyncHandler(async (req, res) => {
-  res.render('new-book', { title: 'New Book' });
+  res.render('new-book', { book:{}, title: 'New Book' });
 }));
 
 /* POST - create book */
 router.post('/new', asyncHandler(async (req, res) => {
-  const book = await Book.create(req.body);
-  res.redirect('/books');
+  let book;
+  try {
+    book = await Book.create(req.body);
+    res.redirect('/books');
+  } catch (error) {
+    if(error.name === 'SequelizeValidationError') {
+      book = await Book.build(req.body);
+      res.render('new-book', { book, title: 'New Book', errors: error.errors });
+    }
+  }
 }));
 
 /* GET - individual book */
@@ -59,6 +67,5 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
   await book.destroy();
   res.redirect('/books');
 }));
-
 
 module.exports = router;
