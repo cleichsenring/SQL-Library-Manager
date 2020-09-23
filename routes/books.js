@@ -46,8 +46,7 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
   if(book) {
     res.render('book/update-book', { book , title: 'Update book'});
   } else {
-    const err = new Error();
-    err.message = 'The book you are looking for decided to go elsewhere...'
+    const err = new Error('The book you are looking for decided to go elsewhere...');
     next(err);
   }
 }));
